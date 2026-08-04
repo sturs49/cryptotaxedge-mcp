@@ -1,0 +1,13 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.sturs49/cryptotaxedge",
+  "description": "US tax classification for on-chain transactions: submit a tx hash, get the canonical category, tax treatment, confidence score, and an explicit route-to-review flag, with per-leg breakdowns and IRS-citation suggestions. 80+ chains. Free Developer tier.",
+  "websiteUrl": "https://mcp.cryptotaxedge.com",
+  "version": "1.0.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.cryptotaxedge.com/"
+    }
+  ]
+}
