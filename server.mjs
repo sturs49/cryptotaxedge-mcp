@@ -8,7 +8,8 @@
  * Also accepts MCP over stdio (newline-delimited or Content-Length), so
  * Glama's mcp-proxy wrapper can introspect the same process.
  *
- * initialize / tools/list / ping do not require a key.
+ * initialize / tools/list / ping (and empty resources/prompts lists) are
+ * answered from catalog.json so Glama inspect works with no network.
  * tools/call is 401 unless CTE_API_KEY is set or the request already has
  * Authorization: Bearer … — never anonymous classify.
  */
@@ -16,6 +17,13 @@
 import http from "node:http";
 import https from "node:https";
 import { Buffer } from "node:buffer";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const CATALOG = JSON.parse(
+  readFileSync(join(dirname(fileURLToPath(import.meta.url)), "catalog.json"), "utf8")
+);
 
 const UPSTREAM = process.env.CTE_MCP_URL || "https://mcp.cryptotaxedge.com/";
 const PORT = Number(process.env.PORT || 8080);
@@ -139,6 +147,47 @@ function postUpstream(payload, extraHeaders = {}) {
   });
 }
 
+function localCatalog(message) {
+  const method = methodOf(message);
+  if (isNotification(message) || method === "notifications/initialized" || method === "initialized") {
+    return { httpStatus: 202, body: null, notification: true };
+  }
+  if (method === "initialize") {
+    return {
+      httpStatus: 200,
+      body: { jsonrpc: "2.0", id: message.id ?? null, result: CATALOG.initialize },
+    };
+  }
+  if (method === "tools/list") {
+    return {
+      httpStatus: 200,
+      body: { jsonrpc: "2.0", id: message.id ?? null, result: CATALOG.tools },
+    };
+  }
+  if (method === "ping" || method === "logging/setLevel") {
+    return { httpStatus: 200, body: { jsonrpc: "2.0", id: message.id ?? null, result: {} } };
+  }
+  if (method === "resources/list") {
+    return {
+      httpStatus: 200,
+      body: { jsonrpc: "2.0", id: message.id ?? null, result: { resources: [] } },
+    };
+  }
+  if (method === "resources/templates/list") {
+    return {
+      httpStatus: 200,
+      body: { jsonrpc: "2.0", id: message.id ?? null, result: { resourceTemplates: [] } },
+    };
+  }
+  if (method === "prompts/list") {
+    return {
+      httpStatus: 200,
+      body: { jsonrpc: "2.0", id: message.id ?? null, result: { prompts: [] } },
+    };
+  }
+  return null;
+}
+
 async function handleRpcMessage(message, incomingAuthorization) {
   if (Array.isArray(message)) {
     const parts = await Promise.all(
@@ -159,6 +208,9 @@ async function handleRpcMessage(message, incomingAuthorization) {
   if (!method) {
     return jsonRpcError(message.id ?? null, -32600, "Invalid Request");
   }
+
+  const local = localCatalog(message);
+  if (local) return local;
 
   if (CALL_METHODS.has(method)) {
     const auth = authForCall(incomingAuthorization);
