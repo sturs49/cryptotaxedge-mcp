@@ -62,6 +62,47 @@ The same engine is available over plain REST — see the
 [MCP Registry](https://github.com/modelcontextprotocol/registry) as
 `io.github.sturs49/cryptotaxedge`.
 
+Listed on [Glama](https://glama.ai/mcp/servers/sturs49/cryptotaxedge-mcp)
+([`glama.json`](./glama.json)).
+
+## License
+
+[MIT](./LICENSE) © 2026 Kevin Stursberg / CryptoTaxEdge. This repository is the
+public listing (docs, registry manifest, and a small catalog proxy). The
+classification engine is the remote server above, not this repo.
+
+## Glama / local container
+
+Glama grades Tool Definition Quality from a container that starts and answers
+MCP `initialize` + `tools/list`. The image is a tiny Node proxy — it does not
+ship the engine. Catalog methods are forwarded to `https://mcp.cryptotaxedge.com/`.
+
+- **Listen port:** `8080` (override with `PORT`; binds `0.0.0.0`)
+- **Paths:** `POST /` and `POST /mcp` (streamable HTTP / JSON-RPC)
+- **Health:** `GET /` or `GET /health`
+- No API key for `initialize`, `tools/list`, or `ping`
+- `tools/call` returns **401** unless `CTE_API_KEY` is set or the request
+  already has `Authorization: Bearer …`
+
+```bash
+docker build -t cryptotaxedge-mcp .
+docker run --rm -p 8080:8080 cryptotaxedge-mcp
+```
+
+```bash
+curl -X POST http://localhost:8080/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"local","version":"0"}}}'
+
+curl -X POST http://localhost:8080/ \
+  -H "Content-Type: application/json" \
+  -d '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'
+```
+
+If Glama generates a Dockerfile and wraps CMD with `mcp-proxy --`, set the
+admin CMD arguments to `["node", "server.mjs", "--stdio"]`. The same process
+also accepts stdio when started without `--stdio`.
+
 ## Cite / provenance
 
 The category vocabulary and treatment semantics this server returns are the
