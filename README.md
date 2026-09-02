@@ -60,10 +60,15 @@ The same engine is available over plain REST — see the
 
 [`server.json`](./server.json) — published to the official
 [MCP Registry](https://github.com/modelcontextprotocol/registry) as
-`io.github.sturs49/cryptotaxedge`.
+`io.github.sturs49/cryptotaxedge`
+([live record](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.sturs49%2Fcryptotaxedge/versions/latest)).
 
 Listed on [Glama](https://glama.ai/mcp/servers/sturs49/cryptotaxedge-mcp)
-([`glama.json`](./glama.json)).
+([`glama.json`](./glama.json))
+and [Smithery](https://smithery.ai/servers/sturs49/cryptotaxedge).
+
+[![CryptoTaxEdge MCP server](https://glama.ai/mcp/servers/sturs49/cryptotaxedge-mcp/badges/score.svg)](https://glama.ai/mcp/servers/sturs49/cryptotaxedge-mcp/score)
+[![CryptoTaxEdge MCP server](https://glama.ai/mcp/servers/sturs49/cryptotaxedge-mcp/badges/card.svg)](https://glama.ai/mcp/servers/sturs49/cryptotaxedge-mcp)
 
 ## License
 
