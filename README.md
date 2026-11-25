@@ -3,7 +3,7 @@
 **US tax classification for on-chain transactions, as an MCP server.** Submit transaction
 hashes and get back the canonical event category, the US tax treatment with cited
 authority, a calibrated confidence score, an explicit route-to-review flag on uncertain
-rows, and per-leg breakdowns with counterparty identification. 80+ chains, including
+rows, and per-leg breakdowns with counterparty identification. 100+ chains, including
 Ethereum, the major L2s, and Solana.
 
 This is a **remote** MCP server — nothing to install or run locally.
